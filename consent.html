@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Elara SMS consent (opt-in)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Program home</a>
+    <a href="consent.html">Consent</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+  </nav>
+
+  <h1>Elara SMS consent (opt-in)</h1>
+  <p>Elara is personal technology software operated by a Sole Proprietor. This SMS program is <strong>application-to-person</strong>: the software sends informational messages to <strong>the account holder only</strong> (one opted-in user). It is not a marketing list, not a blast campaign, and not person-to-person chat between two consumer phones.</p>
+  <p class="note">This page is public and does not require a login. Reviewers can verify the full opt-in here. This page does not send SMS.</p>
+
+  <h2>Who is messaged</h2>
+  <ul>
+    <li>Recipient: the Elara account holder (the person who owns the software account).</li>
+    <li>No guests, customers, employees, or third-party lists are messaged.</li>
+    <li>Messages are service notifications, replies, and reminders about that user’s Elara software.</li>
+  </ul>
+
+  <h2 id="web-form">Web Form opt-in (path 1)</h2>
+  <p>Workflow: the account holder opens this public URL, reads the disclosures, enters the mobile number that should receive Elara software SMS, checks the SMS consent box (unchecked by default), then submits. Consent is optional and is <strong>not</strong> required to use Elara software. Messaging consent is separate from any general terms acceptance.</p>
+
+  <form id="sms-opt-in" class="panel" action="#" method="post" novalidate>
+    <label class="stack" for="mobile">Account holder mobile number (the only number this program may message)</label>
+    <input id="mobile" name="mobile" type="tel" inputmode="tel" autocomplete="off" required placeholder="Enter the account holder mobile number">
+
+    <div class="consent-row">
+      <input type="checkbox" id="sms-consent" name="sms_consent" value="yes">
+      <label for="sms-consent" id="cta-language">I, the account holder, agree to receive recurring informational text messages from Elara about my Elara software (service notifications, replies, and reminders). Message frequency varies. Message and data rates may apply. Reply STOP to unsubscribe. Reply HELP for help. Consent is not a condition of using Elara. <a href="terms.html">Terms</a>. <a href="privacy.html">Privacy</a> (mobile numbers and messaging consent are not shared with third parties or affiliates for marketing or promotional purposes).</label>
+    </div>
+
+    <p class="note">The SMS consent box above loads <strong>unchecked</strong>. Submit stays blocked until it is checked. Checking it is the affirmative opt-in action.</p>
+    <button type="submit">Submit SMS consent</button>
+    <p id="form-ok" class="ok" role="status">Consent recorded on this page for the account-holder number you entered. This page does not send SMS. After the messaging campaign is approved, Elara software may send informational messages only to that consented number. Reply STOP to cancel, HELP for help.</p>
+    <p id="form-err" class="note" hidden>Check the SMS consent box (it starts unchecked) and enter the account holder mobile number before submitting.</p>
+  </form>
+
+  <h2 id="in-product-replica">Other opt-in — in-product replica (path 2)</h2>
+  <p>Workflow: the same account holder may also confirm SMS consent inside private Elara software settings. That settings screen is not public, so reviewers verify it from this hosted replica. The replica matches the in-product call to action: an unchecked-by-default SMS checkbox, the same disclosures, and links to Terms and Privacy. The account holder must actively check the box. Consent is optional and is not required to use the software.</p>
+
+  <div class="panel replica" aria-label="Public replica of in-product SMS consent">
+    <p><strong>Elara software settings — SMS notifications (public replica for reviewers)</strong></p>
+    <p class="note">This replica is evidence of the in-product screen. It is not a second live form. The live Web Form is above.</p>
+    <div class="consent-row">
+      <input type="checkbox" disabled aria-checked="false" tabindex="-1">
+      <p>I, the account holder, agree to receive recurring informational text messages from Elara about my Elara software (service notifications, replies, and reminders). Message frequency varies. Message and data rates may apply. Reply STOP to unsubscribe. Reply HELP for help. Consent is not a condition of using Elara. <a href="terms.html">Terms</a>. <a href="privacy.html">Privacy</a> (mobile numbers and messaging consent are not shared with third parties or affiliates for marketing or promotional purposes).</p>
+    </div>
+    <p class="note">Checkbox shown unchecked, as it appears in-product before the account holder opts in.</p>
+  </div>
+
+  <h2>Program disclosures</h2>
+  <ul>
+    <li>Message type: informational / service SMS from Elara software, not marketing blasts.</li>
+    <li>Frequency: varies with software events; unprompted messages are limited.</li>
+    <li>Message and data rates may apply.</li>
+    <li>Reply STOP to unsubscribe. Reply HELP for help.</li>
+    <li>No SMS keyword opt-in (do not text JOIN/START to opt in).</li>
+    <li>Privacy: <a href="privacy.html">privacy.html</a>. Terms: <a href="terms.html">terms.html</a>.</li>
+  </ul>
+
+  <script>
+    (function () {
+      var form = document.getElementById("sms-opt-in");
+      var box = document.getElementById("sms-consent");
+      var mobile = document.getElementById("mobile");
+      var ok = document.getElementById("form-ok");
+      var err = document.getElementById("form-err");
+      box.checked = false;
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var ready = box.checked && mobile.value.trim().length > 0;
+        err.hidden = ready;
+        ok.classList.toggle("show", ready);
+        if (ready) {
+          box.disabled = true;
+          mobile.disabled = true;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
