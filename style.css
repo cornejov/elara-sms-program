@@ -19,10 +19,6 @@ h2 { font-size: 1.15rem; margin-top: 1.75rem; }
   padding: 1rem 1.1rem;
   margin: 1rem 0;
 }
-.replica {
-  background: #f4f4f4;
-  border: 2px dashed #555;
-}
 label.stack { display: block; margin: 0.75rem 0 0.35rem; font-weight: 600; }
 input[type="tel"] {
   width: 100%;
@@ -46,7 +42,14 @@ button[type="submit"] {
   font-size: 1rem;
   padding: 0.45rem 0.9rem;
 }
+button[type="submit"]:disabled { cursor: not-allowed; opacity: 0.6; }
 .note { color: #333; }
+.error {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #a22;
+  background: #fff0f0;
+}
 .ok {
   margin-top: 1rem;
   padding: 0.75rem;
