@@ -16,6 +16,10 @@
   </nav>
 
   <h1>Elara SMS consent (opt-in)</h1>
+  <div id="sample-banner" class="sample-banner">
+    <strong>Carrier-review sample — not a live opt-in.</strong>
+    This page shows a complete working sample of the same SMS opt-in form (privacy, terms, disclosures, unchecked checkbox, and phone field). Submitting this sample does <strong>not</strong> record production consent and does <strong>not</strong> send SMS. Live SMS opt-in uses this same form after a private one-use invitation.
+  </div>
   <p>This is a private, two-way informational SMS program between <strong>the single Elara account holder and Elara</strong>. It is not a public service, marketing list, or blast campaign.</p>
   <p class="note">This public page records consent only. It does not send SMS.</p>
 
@@ -27,9 +31,10 @@
   </ul>
 
   <h2 id="web-form">Web Form opt-in</h2>
-  <p>This is the only opt-in method. Enter the account-holder number, read the disclosure, check the box, and submit. The server records the phone, server timestamp, exact disclosure/version, and source before this page reports success.</p>
+  <p id="web-form-copy">This is the only opt-in method. The sample below uses the same fields as live SMS opt-in. Enter a number, read the disclosure, check the box, and submit the sample. Sample submit does not record production consent and does not send SMS. Live SMS opt-in uses this same form after a private one-use invitation; then the server records the phone, server timestamp, exact disclosure/version, and source before the page reports success.</p>
 
   <form id="sms-opt-in" class="panel" action="#" method="post" novalidate>
+    <p id="sample-form-label" class="sample-form-label">Sample form (same fields as live opt-in)</p>
     <label class="stack" for="mobile">Account holder mobile number (the only number this program may message)</label>
     <input id="mobile" name="mobile" type="tel" inputmode="tel" autocomplete="off" required placeholder="Enter the account holder mobile number">
 
@@ -63,6 +68,9 @@
       var disclosure = document.getElementById("cta-language");
       var ok = document.getElementById("form-ok");
       var err = document.getElementById("form-err");
+      var sampleBanner = document.getElementById("sample-banner");
+      var sampleLabel = document.getElementById("sample-form-label");
+      var webFormCopy = document.getElementById("web-form-copy");
       var endpoint = document.querySelector('meta[name="elara-consent-endpoint"]').content.trim();
       var invitationToken = "";
       if (window.location.hash.indexOf("#invite=") === 0) {
@@ -73,14 +81,25 @@
         }
         window.history.replaceState(null, "", window.location.pathname + window.location.search);
       }
+      var isSample = !invitationToken;
       box.checked = false;
+      if (!isSample) {
+        sampleBanner.hidden = true;
+        sampleLabel.hidden = true;
+        webFormCopy.textContent = "This is the only opt-in method. Enter the account-holder number, read the disclosure, check the box, and submit. The server records the phone, server timestamp, exact disclosure/version, and source before this page reports success.";
+      }
       function syncSubmitState() {
-        submit.disabled = !endpoint || !invitationToken || !box.checked || mobile.value.trim().length === 0;
+        var filled = box.checked && mobile.value.trim().length > 0;
+        if (isSample) {
+          submit.disabled = !filled;
+          return;
+        }
+        submit.disabled = !endpoint || !invitationToken || !filled;
       }
       box.addEventListener("change", syncSubmitState);
       mobile.addEventListener("input", syncSubmitState);
       syncSubmitState();
-      if (!endpoint || !invitationToken) {
+      if (!isSample && (!endpoint || !invitationToken)) {
         err.textContent = endpoint
           ? "A private one-use invitation is required. No consent has been recorded."
           : "Consent recording is not available yet. No consent has been recorded.";
@@ -90,12 +109,25 @@
         e.preventDefault();
         var ready = box.checked && mobile.value.trim().length > 0;
         ok.classList.remove("show");
-        if (!ready || !endpoint || !invitationToken) {
+        if (!ready) {
+          err.textContent = "Check the consent box and enter the account-holder mobile number.";
+          err.hidden = false;
+          return;
+        }
+        if (isSample) {
+          submit.disabled = true;
+          err.hidden = true;
+          box.disabled = true;
+          mobile.disabled = true;
+          ok.textContent = "Sample only. No production consent was recorded. No SMS was sent. Live SMS opt-in requires a private one-use invitation.";
+          ok.classList.add("show");
+          submit.textContent = "Submit SMS consent";
+          return;
+        }
+        if (!endpoint || !invitationToken) {
           err.textContent = !endpoint
             ? "Consent recording is not available yet. No consent has been recorded."
-            : !invitationToken
-              ? "A private one-use invitation is required. No consent has been recorded."
-              : "Check the consent box and enter the account-holder mobile number.";
+            : "A private one-use invitation is required. No consent has been recorded.";
           err.hidden = false;
           return;
         }
