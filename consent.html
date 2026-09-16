@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Elara SMS consent (opt-in)</title>
   <link rel="stylesheet" href="style.css">
-  <meta name="elara-consent-endpoint" content="">
+  <meta name="elara-consent-endpoint" content="https://honeyed-flower-988.fly.dev/api/v1/sms/consent">
 </head>
 <body>
   <nav>
@@ -64,25 +64,38 @@
       var ok = document.getElementById("form-ok");
       var err = document.getElementById("form-err");
       var endpoint = document.querySelector('meta[name="elara-consent-endpoint"]').content.trim();
+      var invitationToken = "";
+      if (window.location.hash.indexOf("#invite=") === 0) {
+        try {
+          invitationToken = decodeURIComponent(window.location.hash.slice(8));
+        } catch (decodeError) {
+          invitationToken = "";
+        }
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
       box.checked = false;
       function syncSubmitState() {
-        submit.disabled = !endpoint || !box.checked || mobile.value.trim().length === 0;
+        submit.disabled = !endpoint || !invitationToken || !box.checked || mobile.value.trim().length === 0;
       }
       box.addEventListener("change", syncSubmitState);
       mobile.addEventListener("input", syncSubmitState);
       syncSubmitState();
-      if (!endpoint) {
-        err.textContent = "Consent recording is not available yet. No consent has been recorded.";
+      if (!endpoint || !invitationToken) {
+        err.textContent = endpoint
+          ? "A private one-use invitation is required. No consent has been recorded."
+          : "Consent recording is not available yet. No consent has been recorded.";
         err.hidden = false;
       }
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
         var ready = box.checked && mobile.value.trim().length > 0;
         ok.classList.remove("show");
-        if (!ready || !endpoint) {
-          err.textContent = endpoint
-            ? "Check the consent box and enter the account-holder mobile number."
-            : "Consent recording is not available yet. No consent has been recorded.";
+        if (!ready || !endpoint || !invitationToken) {
+          err.textContent = !endpoint
+            ? "Consent recording is not available yet. No consent has been recorded."
+            : !invitationToken
+              ? "A private one-use invitation is required. No consent has been recorded."
+              : "Check the consent box and enter the account-holder mobile number.";
           err.hidden = false;
           return;
         }
@@ -99,7 +112,8 @@
               phone: mobile.value.trim(),
               affirmed: true,
               disclosure_version: disclosure.dataset.disclosureVersion,
-              disclosure_text: disclosure.textContent.trim()
+              disclosure_text: disclosure.textContent.trim(),
+              invitation_token: invitationToken
             })
           });
           var result = await response.json();
