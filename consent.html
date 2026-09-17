@@ -56,6 +56,9 @@
     <li>Message and data rates may apply.</li>
     <li>Reply STOP to unsubscribe. Reply HELP for help.</li>
     <li>No SMS keyword opt-in (do not text JOIN/START to opt in).</li>
+    <li>Reply STOP records a controlling opt-out in Elara’s consent ledger and invalidates send authorization.</li>
+    <li>Reply START does not restore Elara send authorization (Twilio delivery-only).</li>
+    <li>After STOP, a new private one-use invitation web consent is required before any further outbound.</li>
     <li>Privacy: <a href="privacy.html">privacy.html</a>. Terms: <a href="terms.html">terms.html</a>.</li>
   </ul>
 
